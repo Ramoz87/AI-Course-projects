@@ -57,7 +57,21 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
-    raise NotImplementedError
+    distribution = dict()
+    
+    links = corpus[page]
+    n = len(corpus)
+    n_links = len(links)
+    if n_links > 0:
+        for link in corpus:
+            distribution[link] = (1 - damping_factor) / n
+        for link in links:
+            distribution[link] += damping_factor / n_links
+    else:
+        for link in corpus:
+            distribution[link] = 1 / n
+    
+    return distribution
 
 
 def sample_pagerank(corpus, damping_factor, n):
@@ -69,7 +83,17 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    page_ranks = dict()
+    next_page = random.choice(list(corpus.keys()))
+
+    for _ in range(n):
+        page_ranks[next_page] = page_ranks.get(next_page, 0) + 1/n
+        model = transition_model(corpus, next_page, damping_factor)
+        population = list(model.keys())
+        weights = list(model.values())
+        next_page = random.choices(population, weights=weights, k=1)[0]
+
+    return page_ranks
 
 
 def iterate_pagerank(corpus, damping_factor):
@@ -81,8 +105,40 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    page_ranks = dict()
+    n = len(corpus)
+    for page in corpus:
+        page_ranks[page] = 1 / n
 
+    converged = False
+    while not converged:
+        new_ranks = dict()
+        for page in corpus:
+            sum = sum_probability(corpus, page, page_ranks)
+            new_ranks[page] = (1 - damping_factor) / n + damping_factor * sum
+
+        converged = isConverged(corpus, page_ranks, new_ranks)
+        page_ranks = new_ranks
+
+    return page_ranks
+
+def sum_probability(corpus, page, page_ranks):
+    sum = 0
+    for i in corpus:
+        links = corpus[i]
+        num_links = len(links)
+        if num_links == 0:
+            sum += page_ranks[i] / len(corpus)
+        elif page in links:                
+            sum += page_ranks[i] / num_links
+    return sum
+
+
+def isConverged(corpus, old_ranks, new_ranks):
+    for page in corpus:
+        if abs(new_ranks[page] - old_ranks[page]) > 0.001:
+            return False
+    return True
 
 if __name__ == "__main__":
     main()
