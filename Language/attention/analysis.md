@@ -1,18 +1,17 @@
 # Analysis
 
-## Layer TODO, Head TODO
+## Layer 1, Head 11
 
-TODO
+This attention head shows relation between verb and its particle while building a new verb meaning. For example: turned down, passed through, picked up. 
 
-Example Sentences:
-- TODO
-- TODO
+Example Sentences: 
+- We turned down a narrow lane and passed through a small [MASK].
+- Then I picked up a [MASK] from the table.
 
-## Layer TODO, Head TODO
+## Layer 2, Head 7 / Layer 4, Head 10
 
-TODO
+This attentions shown relation between prepositions and their complements. For example: under the table, via courier.
 
-Example Sentences:
-- TODO
-- TODO
-
+Example Sentences: 
+- The cat is hiding under the [MASK].
+- They sent the package via [MASK].
